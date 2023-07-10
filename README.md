@@ -4,3 +4,6 @@
 - Build: gcc program.c -o program
 - Run: ./program
 
+## FIFO
+## IPC - Message Queuing
+## IPC - Semaphores
