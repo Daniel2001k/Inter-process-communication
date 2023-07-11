@@ -11,12 +11,12 @@
 static const char *fifoServerPath = "/tmp/FIFO-TMP-SERWER";
 
 int fifoServerRead;
-int fifoServerWriteDesc;
+int fifoServerWrite;
 
 void handleSignals(int i)
 {
 	close(fifoServerRead);
-	close(fifoServerWriteDesc);
+	close(fifoServerWrite);
 
 	unlink(fifoServerPath);
 
@@ -25,8 +25,8 @@ void handleSignals(int i)
 
 int main()
 {
-	int clientReadDesc;
-	int clientWriteDesc;
+	int clientRead;
+	int clientWrite;
 
 	char buffer[1000];
 	char *pointer = buffer;
@@ -40,7 +40,7 @@ int main()
 	mknod(fifoServerPath, S_IFIFO | 0600, 0);
 
 	fifoServerRead = open(fifoServerPath, O_RDONLY);
-	fifoServerWriteDesc = open(fifoServerPath, O_WRONLY);
+	fifoServerWrite = open(fifoServerPath, O_WRONLY);
 
 	for (;;)
 	{
@@ -54,24 +54,24 @@ int main()
 			pointer += strlen(pointer);
 			sprintf(pointer, "%d", (int)clientPID);
 
-			clientReadDesc = open(buffer, O_RDONLY);
+			clientRead = open(buffer, O_RDONLY);
 
 			*(pointer - 2) = '1';
 
-			if ((clientWriteDesc = open(buffer, O_WRONLY)) != -1)
+			if ((clientWrite = open(buffer, O_WRONLY)) != -1)
 			{
 				double a, b;
 
-				read(clientReadDesc, &a, sizeof(double));
+				read(clientRead, &a, sizeof(double));
 				printf("Otrzymana wiadomość %lf:\n", a);
 
 				b = a * a;
 
-				write(clientWriteDesc, &b, sizeof(double));
+				write(clientWrite, &b, sizeof(double));
 			}
 
-			close(clientReadDesc);
-			close(clientWriteDesc);
+			close(clientRead);
+			close(clientWrite);
 			close(fifoServerRead);
 			return 0;
 		}
