@@ -1,6 +1,15 @@
-# IPC Serwer - Kolejki komunikatów
+# Kolejka komunikatów IPC:
 
-## Plan
+- Kolejka komunikatów IPC (Inter-Process Communication) jest mechanizmem komunikacji międzyprocesowej, w której procesy wysyłają i odbierają komunikaty zdefiniowanego formatu.
+- Kolejka komunikatów składa się z bufora, w którym przechowywane są komunikaty. Każdy komunikat ma określony typ, który służy do jego identyfikacji.
+- Procesy korzystają z funkcji do wysyłania (msgsnd) i odbierania (msgrcv) komunikatów z kolejki komunikatów.
+- Przy wysyłaniu komunikatu, proces podaje typ komunikatu, treść komunikatu oraz inne parametry, takie jak flagi i priorytet.
+- Procesy odbierają komunikaty z kolejki na podstawie ich typu. Odbiór komunikatu może być blokujący lub nieblokujący.
+- Kolejka komunikatów zapewnia bezpieczne i niezawodne przesyłanie komunikatów między procesami.
+
+## IPC Serwer - Kolejki komunikatów
+
+### Plan
 
 1. Importuj wymagane biblioteki.
 2. Zdefiniuj struktury `msg1` i `msg2` do przechowywania komunikatów.
