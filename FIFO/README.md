@@ -1,3 +1,11 @@
+# Kolejka FIFO:
+
+- Kolejka FIFO (First-In-First-Out) jest mechanizmem komunikacji międzyprocesowej, w którym procesy komunikują się za pomocą plików FIFO.
+- Plik FIFO jest specjalnym rodzajem pliku w systemie plików, który służy jako potok nazwany. Posiada unikalną nazwę w przestrzeni nazw systemu plików.
+- Procesy mogą otwierać ten plik w trybie do odczytu lub zapisu i przesyłać dane w obie strony.
+- Proces, który tworzy plik FIFO, działa jako serwer, który nasłuchuje na przychodzące połączenia od innych procesów.
+- Pozostałe procesy, które chcą komunikować się z serwerem, otwierają ten sam plik FIFO i wysyłają do niego żądania lub dane.
+- Serwer odczytuje te dane i odpowiada na żądania, które otrzymuje od innych procesów.
 
 ## Server FIFO
 
