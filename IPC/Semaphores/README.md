@@ -1,6 +1,15 @@
-# IPC Serwer - Semafory
+# Semafory IPC:
 
-## Plan
+- Semafory IPC są mechanizmem synchronizacji międzyprocesowej, który służy do kontrolowania dostępu do współdzielonych zasobów.
+- Semafory IPC składają się z liczb całkowitych nazywanych semaforami, które przechowują wartości dodatnie lub zero.
+- Procesy korzystają z funkcji do operacji na semaforach, takich jak semget, semop i semctl.
+- Procesy mogą wykonywać operacje na semaforach, takie jak zwiększanie, zmniejszanie lub ustawianie wartości semaforów.
+- Semafory są wykorzystywane do rozwiązania problemów synchronizacji, takich jak wzajemne wykluczanie (chronienie krytycznych sekcji), blokowanie/zwalnianie dostępu do zasobów, kontrola kolejności wykonywania zadań itp.
+- Semafor IPC zapewnia synchronizację międzyprocesową i unikanie zakleszczeń podczas korzystania z współdzielonych zasobów.
+
+## IPC Serwer - Semafory
+
+### Plan
 
 1. Importuj wymagane biblioteki.
 2. Zadeklaruj zmienne globalne.
@@ -23,7 +32,7 @@
 19. Zwolnij pamięć zaalokowaną dla `msg`.
 20. Powróć do kroku 14.
 
-## Biblioteki
+### Biblioteki
 
 | Biblioteka    | Opis                                                                                                                                                             |
 |---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
