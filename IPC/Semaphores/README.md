@@ -38,24 +38,100 @@
 | `errno.h`     | Ta biblioteka zawiera deklaracje zmiennych globalnych i funkcji związanych z obsługą błędów. W kodzie używana jest do obsługi błędów.                                 |
 | `sys/types.h` | Ta biblioteka zawiera deklaracje typów danych używanych w systemowych wywołaniach i interfejsach.                                                                  |
 
-## Metody
+### Metody
+- signal(signal_number, signal_handler) - Funkcja signal() instaluje obsługę sygnału (signal_handler) dla określonego numeru sygnału (signal_number). W przypadku otrzymania sygnału, system operacyjny wywoła funkcję obsługi sygnału.
+```c
+signal(SIGTERM, al);
+signal(SIGINT, al);`
+```
 
-| Metoda                                                  | Opis                                                                                                                                                                                               | Przykład                                                                                                                                                    |
-|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `signal(signal_number, signal_handler)`                  | Funkcja signal() instaluje obsługę sygnału (signal_handler) dla określonego numeru sygnału (signal_number). W przypadku otrzymania sygnału, system operacyjny wywoła funkcję obsługi sygnału.          | ```c signal(SIGTERM, al); ```                                                                                                                              |
-| `strndup(string, length)`                                | Funkcja strndup() tworzy kopię podanego łańcucha znaków (string) o podanej długości (length). Zwraca wskaźnik do nowo utworzonego łańcucha.                                                         | ```c sciezka = strndup("/tmp/roboczy.sem_serwer", strlen("/tmp/roboczy.sem_serwer")); ```                                                                |
-| `access(path, mode)`                                    | Funkcja access() sprawdza dostępność pliku o podanej ścieżce (path) i trybie dostępu (mode). Zwraca 0, jeśli plik jest dostępny, lub -1 w przypadku błędu.                                        | ```c if (access(sciezka, F_OK) == 0) czy_skasowac = 0; ```                                                                                                  |
-| `open(path, flags, mode)`                               | Funkcja open() otwiera plik o podanej ścieżce (path) z określonymi flagami (flags) i trybem dostępu (mode). Zwraca deskryptor pliku lub -1 w przypadku błędu.                                      | ```c plik = open(sciezka, O_CREAT | O_EXCL, 0600); ```                                                                                                    |
-| `unlink(path)`                                          | Funkcja unlink() usuwa plik o podanej ścieżce (path) z systemu plików.                                                                                                                              | ```c unlink(sciezka); ```                                                                                                                                 |
-| `free(ptr)`                                             | Funkcja free() zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik (ptr).                                                                                                                       | ```c free(sciezka); ```                                                                                                                                   |
-| `shmget(key, size, shmflg)`                             | Funkcja shmget() tworzy nowy segment pamięci współdzielonej lub pobiera identyfikator istniejącego segmentu na podstawie klucza IPC (key). Zwraca identyfikator segmentu lub -1 w przypadku błędu.   | ```c mem = shmget(klucz_memS, 50 * sizeof(char), 0600 | IPC_CREAT | IPC_EXCL); ```                                                                      |
-| `shmat(shmid, shmaddr, shmflg)`                         | Funkcja shmat() dołącza segment pamięci współdzielonej o określonym identyfikatorze (shmid) do przestrzeni adresowej procesu. Zwraca wskaźnik do segmentu lub -1 w przypadku błędu.                     | ```c memS = shmat(mem, (char *)0, 0); ```                                                                                                                 |
-| `semget(key, nsems, semflg)`                             | Funkcja semget() tworzy nowy zbiór semaforów lub pobiera identyfikator istniejącego zbioru na podstawie klucza IPC (key). Zwraca identyfikator zbioru semaforów lub -1 w przypadku błędu.              | ```c sem = semget(klucz_semafory, 2, 0600 | IPC_CREAT | IPC_EXCL); ```                                                                                   |
-| `semctl(semid, semnum, cmd, arg)`                        | Funkcja semctl() wykonuje różne operacje na zbiorze semaforów, takie jak ustawianie wartości początkowych, pobieranie wartości, zmienianie wartości itp.                                                 | ```c semctl(sem, 0, SETALL, wartosci_poczatkowe_semaforow); ```                                                                                            |
-| `semop(semid, sops, nsops)`                             | Funkcja semop() wykonuje operacje na semaforach w danym zbiorze semaforów.                                                                                                                        | ```c if (semop(sem, &setSem, 1) == -1) { ... } ```                                                                                                          |
-| `atoi(str)`                                             | Funkcja atoi() konwertuje podany łańcuch znaków (str) na wartość całkowitą.                                                                                                                       | ```c double wynik = atoi(memS) * atoi(memS); ```                                                                                                           |
-| `sprintf(buffer, format, ...)`                          | Funkcja sprintf() działa podobnie jak printf(), ale zapisuje sformatowane dane do bufora (buffer) zamiast na standardowe wyjście.                                                                   | ```c sprintf(msg, "%lf", wynik); ```                                                                                                                        |
-| `strcpy(destination, source)`                           | Funkcja strcpy() kopiuje zawartość łańcucha znaków z source do destination.                                                                                                                      | ```c strcpy(memS, msg); ```                                                                                                                                |
+- strndup(string, length) - Funkcja strndup() tworzy kopię podanego łańcucha znaków (string) o podanej długości (length). Zwraca wskaźnik do nowo utworzonego łańcucha.
+```c
+sciezka = strndup(argv[1], strlen(argv[1]));
+sciezka = strndup("/tmp/roboczy.sem_serwer", strlen("/tmp/roboczy.sem_serwer"));
+```
+
+- access(path, mode) - Funkcja access() sprawdza dostępność pliku o podanej ścieżce (path) i trybie dostępu (mode). Zwraca 0, jeśli plik jest dostępny, lub -1 w przypadku błędu.
+```c
+if (access(sciezka, F_OK) == 0)
+  czy_skasowac = 0;
+```
+
+- open(path, flags, mode) - Funkcja open() otwiera plik o podanej ścieżce (path) z określonymi flagami (flags) i trybem dostępu (mode). Zwraca deskryptor pliku lub -1 w przypadku błędu.
+```c
+if (czy_skasowac && ((plik = open(sciezka, O_CREAT | O_EXCL, 0600)) == -1))
+{
+  fprintf(stderr, "Serwer: Blad utworzenia pliku %s: %s.\n", sciezka, strerror(errno));
+  free(sciezka);
+  return -1;
+}
+```
+
+- unlink(path) - Funkcja unlink() usuwa plik o podanej ścieżce (path) z systemu plików.
+```c
+if (czy_skasowac)
+{
+  unlink(sciezka);
+}
+```
+
+- free(ptr) - Funkcja free() zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik (ptr).
+```c
+free(sciezka);
+```
+
+- shmget(key, size, shmflg) - Funkcja shmget() tworzy nowy segment pamięci współdzielonej lub pobiera identyfikator istniejącego segmentu na podstawie klucza IPC (key). Zwraca identyfikator segmentu lub -1 w przypadku błędu.
+```c
+mem = shmget(klucz_memS, 50 * sizeof(char), 0600 | IPC_CREAT | IPC_EXCL);
+```
+
+- shmat(shmid, shmaddr, shmflg) - Funkcja shmat() dołącza segment pamięci współdzielonej o określonym identyfikatorze (shmid) do przestrzeni adresowej procesu. Zwraca wskaźnik do segmentu lub -1 w przypadku błędu.
+```c
+memS = shmat(mem, (char *)0, 0);
+```
+
+- semget(key, nsems, semflg) - Funkcja semget() tworzy nowy zbiór semaforów lub pobiera identyfikator istniejącego zbioru na podstawie klucza IPC (key). Zwraca identyfikator zbioru semaforów lub -1 w przypadku błędu.
+```c
+sem = semget(klucz_semafory, 2, 0600 | IPC_CREAT | IPC_EXCL);
+```
+
+- semctl(semid, semnum, cmd, arg) - Funkcja semctl() wykonuje różne operacje na zbiorze semaforów, takie jak ustawianie wartości początkowych, pobieranie wartości, zmienianie wartości itp.
+```c
+semctl(sem, 0, IPC_RMID, NULL);
+```
+
+- semop(semid, sops, nsops) - Funkcja semop() wykonuje operacje na semaforach w danym zbiorze semaforów.
+```c
+if (semop(sem, &setSem, 1) == -1)
+{
+  shmdt(memS);
+  shmctl(mem, IPC_RMID, NULL);
+  semctl(sem, 0, IPC_RMID, NULL);
+ 
+  if (czy_skasowac)
+  {
+    unlink(sciezka);
+  }
+
+  free(sciezka);
+  return -1;
+}
+```
+
+- atoi(str) - Funkcja atoi() konwertuje podany łańcuch znaków (str) na wartość całkowitą.
+```c
+double wynik = atoi(memS) * atoi(memS);
+```
+
+- sprintf(buffer, format, ...) - Funkcja sprintf() działa podobnie jak printf(), ale zapisuje sformatowane dane do bufora (buffer) zamiast na standardowe wyjście.
+```c
+sprintf(msg, "%lf", wynik);
+```
+
+- strcpy(destination, source) - Funkcja strcpy() kopiuje zawartość łańcucha znaków z source do destination.
+```c
+strcpy(memS, msg);
+```
 
 
 # IPC Klient - Semafory
@@ -90,16 +166,49 @@
 | `stdlib.h`    | Ta biblioteka zawiera funkcje ogólnego zastosowania. W kodzie używana jest do zarządzania pamięcią i innych operacji ogólnego przeznaczenia.                          |
 | `unistd.h`    | Ta biblioteka zawiera deklaracje standardowych funkcji i stałych, które dostarczają interfejs do systemowych wywołań.                                                |
 
-## Metody
+### Metody
 
-| Metoda                                                | Opis                                                                                                                                                                      | Przykład                                                                                        |
-|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-| `ftok(path, id)`                                      | Funkcja ftok() generuje klucz IPC na podstawie ścieżki (path) i identyfikatora (id). Zwraca wygenerowany klucz.                                                              | ```c klucz_semafory = ftok(sciezka, 0); ```                                                      |
-| `free(ptr)`                                           | Funkcja free() zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik (ptr).                                                                                                | ```c free(sciezka); ```                                                                         |
-| `semget(key, nsems, semflg)`                           | Funkcja semget() pobiera identyfikator zbioru semaforów na podstawie klucza IPC (key). Zwraca identyfikator zbioru semaforów lub -1 w przypadku błędu.                        | ```c id_semafor = semget(klucz_semafory, 2, 0600); ```                                           |
-| `semop(semid, sops, nsops)`                           | Funkcja semop() wykonuje operacje na semaforach w danym zbiorze semaforów.                                                                                                | ```c semop(id_semafor, &setSem, 1); ```                                                          |
-| `shmget(key, size, shmflg)`                           | Funkcja shmget() pobiera identyfikator segmentu pamięci współdzielonej na podstawie klucza IPC (key). Zwraca identyfikator segmentu lub -1 w przypadku błędu.                  | ```c id_pamieci = shmget(klucz_memS, 50 * sizeof(char), 0600); ```                                |
-| `malloc(size)`                                        | Funkcja malloc() alokuje blok pamięci o podanym rozmiarze (size) i zwraca wskaźnik do tego bloku.                                                                         | ```c char *msg = (char *)malloc(100 * sizeof(char)); ```                                        |
-| `shmat(shmid, shmaddr, shmflg)`                       | Funkcja shmat() dołącza segment pamięci współdzielonej o określonym identyfikatorze (shmid) do przestrzeni adresowej procesu. Zwraca wskaźnik do segmentu lub -1 w przypadku błędu. | ```c char *memS = shmat(id_pamieci, (char *)0, 0); ```                                           |
-| `sprintf(buffer, format, ...)`                        | Funkcja sprintf() działa podobnie jak printf(), ale zapisuje sformatowane dane do bufora (buffer) zamiast na standardowe wyjście.                                          | ```c sprintf(msg, "%lf", liczba); ```                                                             |
-| `strcpy(destination, source)`                         | Funkcja strcpy() kopiuje zawartość łańcucha znaków z source do destination.                                                                                               | ```c strcpy(memS, msg); ```                                                                      |
+- ftok(path, id) - Funkcja ftok() generuje klucz IPC na podstawie ścieżki (path) i identyfikatora (id). Zwraca wygenerowany klucz.
+```c
+klucz_semafory = ftok(sciezka, 0);
+klucz_memS = ftok(sciezka, 1);
+```
+
+- free(ptr) - Funkcja free() zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik (ptr).
+```c
+free(msg);
+```
+
+- semget(key, nsems, semflg) - Funkcja semget() pobiera identyfikator zbioru semaforów na podstawie klucza IPC (key). Zwraca identyfikator zbioru semaforów lub -1 w przypadku błędu.
+```c
+id_semafor = semget(klucz_semafory, 2, 0600);
+```
+
+- semop(semid, sops, nsops) - Funkcja semop() wykonuje operacje na semaforach w danym zbiorze semaforów.
+```c
+semop(id_semafor, &setSem, 1);
+```
+
+- shmget(key, size, shmflg) - Funkcja shmget() pobiera identyfikator segmentu pamięci współdzielonej na podstawie klucza IPC (key). Zwraca identyfikator segmentu lub -1 w przypadku błędu.
+```c
+id_pamieci = shmget(klucz_memS, 50 * sizeof(char), 0600);
+```
+
+- malloc(size) - Funkcja malloc() alokuje blok pamięci o podanym rozmiarze (size) i zwraca wskaźnik do tego bloku.
+```c
+char *msg = (char *)malloc(100 * sizeof(char));
+```
+
+- shmat(shmid, shmaddr, shmflg) - Funkcja shmat() dołącza segment pamięci współdzielonej o określonym identyfikatorze (shmid) do przestrzeni adresowej procesu. Zwraca wskaźnik do segmentu lub -1 w przypadku błędu.
+```c
+char *memS = shmat(id_pamieci, (char *)0, 0);
+```
+
+- sprintf(buffer, format, ...) - Funkcja sprintf() działa podobnie jak printf(), ale zapisuje sformatowane dane do bufora (buffer) zamiast na standardowe wyjście.
+```c
+sprintf(msg, "%lf", liczba);
+```
+- strcpy(destination, source) - Funkcja strcpy() kopiuje zawartość łańcucha znaków z source do destination.
+```c
+strcpy(memS, msg);
+```
