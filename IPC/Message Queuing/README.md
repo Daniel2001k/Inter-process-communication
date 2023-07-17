@@ -55,27 +55,90 @@
 | `errno.h`     | Ta biblioteka zawiera deklaracje makr i zmiennych globalnych, które są używane do przechowywania kodu błędu. W kodzie używana jest do obsługi błędów.                                                                                                             |
 
 ## Struktury
-
-- `msg1`: Struktura reprezentująca komunikat typu 1, zawierająca pole `type` oznaczające typ komunikatu oraz pole `pid` przechowujące identyfikator procesu.
-- `msg2`: Struktura reprezentująca komunikat typu 2, zawierająca pole `type` oznaczające typ komunikatu oraz pole `el` przechowujące wartość liczbową.
+- msg1 - Struktura reprezentująca komunikat typu 1, zawierająca pole type oznaczające typ komunikatu oraz pole pid przechowujące identyfikator procesu.
+```c
+typedef struct msg1
+{
+    long type;
+    pid_t pid;
+} p1;
+```
+- msg2 - Struktura reprezentująca komunikat typu 2, zawierająca pole type oznaczające typ komunikatu oraz pole el przechowujące wartość liczbową.
+```c
+typedef struct msg2
+{
+    long type;
+    double el;
+} p2;
+```
 
 ## Metody
 
-| Metoda                                       | Opis                                                                                                                                                                                                                                                              | Przykład                                                                                                                                                                                    |
-|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `signalss(i)`                                | Funkcja obsługi sygnałów, która zwalnia zasoby i kończy program.                                                                                                                                                                                                   | ```c signal(SIGTERM, signalss); signal(SIGINT, signalss); sigignore(SIGCHLD); ```                                                                                                         |
-| `main(argc, argv)`                           | Główna funkcja programu, która realizuje logikę programu.                                                                                                                                                                                                            | ```c int main(int argc, char *argv[]) { ... } ```                                                                                                                                         |
-| `access(path, mode)`                         | Sprawdza dostęp do pliku o podanej ścieżce i zwraca wartość 0 w przypadku sukcesu lub -1 w przypadku błędu.                                                                                                                                                         | ```c if (access(path, F_OK) == 0) czy_skasowac = 0; ```                                                                                                                                  |
-| `strndup(source, n)`                         | Alokuję pamięć i kopiuje n znaków z łańcucha znaków source.                                                                                                                                                                                                          | ```c path = strndup("/tmp/roboczy.kolejka_serwer", strlen("/tmp/roboczy.kolejka_serwer")); ```                                                                                            |
-| `unlink(path)`                               | Usuwa plik o podanej ścieżce.                                                                                                                                                                                                                                      | ```c unlink(path); ```                                                                                                                                                                    |
-| `open(path, flags, mode)`                    | Otwiera plik o podanej ścieżce z podanymi flagami i trybem dostępu i zwraca deskryptor pliku.                                                                                                                                                                      | ```c plik = open(path, O_CREAT | O_EXCL, 0600); ```                                                                                                                                       |
-| `ftok(path, id)`                             | Generuje klucz IPC na podstawie ścieżki i identyfikatora.                                                                                                                                                                                                            | ```c keyq = ftok(path, 0); ```                                                                                                                                                            |
-| `msgget(key, msgflg)`                        | Tworzy kolejkę komunikatów lub pobiera istniejącą kolejkę na podstawie klucza IPC i flag.                                                                                                                                                                           | ```c f = msgget(keyq, 0600 | IPC_CREAT | IPC_EXCL); ```                                                                                                                                |
-| `msgrcv(msqid, msgp, msgsz, msgtyp, msgflg)` | Odbiera komunikat z kolejki komunikatów.                                                                                                                                                                                                                           | ```c if ((msgrcv(f, msg, sizeof(p1) - sizeof(long), 1, 0)) == -1) { ... } ```                                                                                                            |
-| `msgsnd(msqid, msgp, msgsz, msgflg)`         | Wysyła komunikat do kolejki komunikatów.                                                                                                                                                                                                                           | ```c msgsnd(f1, praca, sizeof(p2) - sizeof(long), 0); ```                                                                                                                                |
-| `malloc(size)`                               | Alokuję pamięć o podanym rozmiarze i zwraca wskaźnik na zaalokowany obszar.                                                                                                                                                                                        | ```c msg = (p1 *)malloc(sizeof(p1)); ```                                                                                                                                                  |
-| `free(ptr)`                                  | Zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik.                                                                                                                                                                                                             | ```c free(msg); ```                                                                                                                                                                       |
+- signalss(i) - Funkcja obsługi sygnałów, która zwalnia zasoby i kończy program.
+```c
+void signalss(int i)
+{
+    free(msg);
 
+    msgctl(f, IPC_RMID, NULL);
+    if (czy_skasowac)
+    {
+        unlink(path);
+    }
+    free(path);
+    exit(0);
+}
+```
+- access(path, mode) - Sprawdza dostęp do pliku o podanej ścieżce i zwraca wartość 0 w przypadku sukcesu lub -1 w przypadku błędu.
+```c
+if (access(path, F_OK) == 0)
+        czy_skasowac = 0;
+```
+- strndup(source, n) - Alokuję pamięć i kopiuje n znaków z łańcucha znaków source.
+```c
+char *path = strndup("/tmp/roboczy.kolejka_serwer", strlen("/tmp/roboczy.kolejka_serwer"));
+```
+- unlink(path) - Usuwa plik o podanej ścieżce.
+```c
+if (czy_skasowac)
+  unlink(path);
+```
+- open(path, flags, mode) - Otwiera plik o podanej ścieżce z podanymi flagami i trybem dostępu i zwraca deskryptor pliku.
+```c
+int plik = open(path, O_CREAT | O_EXCL, 0600);
+```
+- ftok(path, id) - Generuje klucz IPC na podstawie ścieżki i identyfikatora.
+```c
+key_t keyq = ftok(path, 0);
+```
+- msgget(key, msgflg) - Tworzy kolejkę komunikatów lub pobiera istniejącą kolejkę na podstawie klucza IPC i flag.
+```c
+int f = msgget(keyq, 0600 | IPC_CREAT | IPC_EXCL);
+```
+- msgrcv(msqid, msgp, msgsz, msgtyp, msgflg) - Odbiera komunikat z kolejki komunikatów.
+```c
+if ((msgrcv(f, msg, sizeof(p1) - sizeof(long), 1, 0)) == -1)
+{
+  if (czy_skasowac)
+    unlink(path);
+  free(path);
+  return -1;
+}
+```
+- msgsnd(msqid, msgp, msgsz, msgflg) - Wysyła komunikat do kolejki komunikatów.
+```c
+int f1;
+p2 *praca = (p2 *)malloc(sizeof(p2));
+msgsnd(f1, praca, sizeof(p2) - sizeof(long), 0);
+```
+- malloc(size) - Alokuję pamięć o podanym rozmiarze i zwraca wskaźnik na zaalokowany obszar.
+```c
+p2 *praca = (p2 *)malloc(sizeof(p2));
+```
+- free(ptr) - Zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik.
+```c
+free(praca);
+```
 
 # IPC - Klient Kolejki Komunikatów
 
@@ -116,20 +179,68 @@
 
 ## Struktury
 
-- `msg1`: Struktura reprezentująca komunikat typu 1, zawierająca pole `type` oznaczające typ komunikatu oraz pole `pid` przechowujące identyfikator procesu.
-- `msg2`: Struktura reprezentująca komunikat typu 2, zawierająca pole `type` oznaczające typ komunikatu oraz pole `el` przechowujące wartość liczbową.
-
+- msg1 - Struktura reprezentująca komunikat typu 1, zawierająca pole type oznaczające typ komunikatu oraz pole pid przechowujące identyfikator procesu.
+```c
+typedef struct msg1 
+{
+    long type;
+    pid_t pid;
+} p1;
+```
+- msg2 - Struktura reprezentująca komunikat typu 2, zawierająca pole type oznaczające typ komunikatu oraz pole el przechowujące wartość liczbową.
+```c
+typedef struct msg2 
+{
+    long type;
+    double el;
+} p2;
+```
 ## Metody
 
-| Metoda                                       | Opis                                                                                                                                                                                                                                                                                                                             | Przykład                                                                                                                                                                                                                                                                                        |
-|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ftok(path, id)`                             | Generuje klucz IPC na podstawie ścieżki do pliku i identyfikatora.                                                                                                                                                                                                                                                              | ```c if ((keyq = ftok(path, 0)) != -1) { ... } ```                                                                                                                                                                                                                                              |
-| `getpid()`                                   | Pobiera identyfikator bieżącego procesu.                                                                                                                                                                                                                                                                                         | ```c pid = getpid(); ```                                                                                                                                                                                                                                                                      |
-| `msgget(key, msgflg)`                        | Tworzy nową kolejkę komunikatów lub pobiera istniejącą kolejkę na podstawie klucza IPC i flag.                                                                                                                                                                                                                                  | ```c if ((f = msgget(keyq, 0600)) != -1) { ... } ```                                                                                                                                                                                                                                           |
-| `malloc(size)`                               | Alokuję pamięć o podanym rozmiarze i zwraca wskaźnik na zaalokowany obszar.                                                                                                                                                                                                                                                      | ```c msg = (p1*)malloc(sizeof(p1)); ```                                                                                                                                                                                                                                                        |
-| `msgsnd(msqid, msgp, msgsz, msgflg)`         | Wysyła komunikat do kolejki komunikatów.                                                                                                                                                                                                                                                                                         | ```c if (msgsnd(f, msg, sizeof(p1) - sizeof(long), 0) != -1) { ... } ```                                                                                                                                                                                                                      |
-| `msgrcv(msqid, msgp, msgsz, msgtyp, msgflg)` | Odbiera komunikat z kolejki komunikatów.                                                                                                                                                                                                                                                                                         | ```c if ((msgrcv(f1, praca, sizeof(p2) - sizeof(long), 3, 0)) != -1) { ... } ```                                                                                                                                                                                                              |
-| `scanf(format, ...)`                         | Funkcja odczytująca dane z wejścia na podstawie podanego formatu.                                                                                                                                                                                                                                                                 | ```c scanf("%lf", &a); ```                                                                                                                                                                                                                                                                    |
-| `printf(format, ...)`                        | Funkcja wyświetlająca sformatowane dane na standardowym wyjściu (ekranie).                                                                                                                                                                                                                                                       | ```c printf("%lf\n", a, praca->el); ```                                                                                                                                                                                                                                                        |
-| `free(ptr)`                                  | Zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik.                                                                                                                                                                                                                                                                           | ```c free(praca); ```                                                                                                                                                                                                                                                                          |
-| `msgctl(msqid, cmd, buf)`                     | Wykonuje różne operacje na kolejkach komunikatów, takie jak usuwanie kolejki komunikatów.                                                                                                                                                                                                                                       | ```c msgctl(f1, IPC_RMID, NULL); ```                                                                                                                                                                                                                                                           |
+- ftok(path, id) - Generuje klucz IPC na podstawie ścieżki do pliku i identyfikatora.
+```c
+key_t keyq;
+if ((keyq = ftok(path, 0)) != -1) 
+```
+- getpid() - Pobiera identyfikator bieżącego procesu.
+```c
+pid_t pid = getpid();
+```
+- msgget(key, msgflg) - Tworzy nową kolejkę komunikatów lub pobiera istniejącą kolejkę na podstawie klucza IPC i flag.
+```c
+int f;
+if ((f = msgget(keyq, 0600)) != -1) 
+```
+- malloc(size) - Alokuję pamięć o podanym rozmiarze i zwraca wskaźnik na zaalokowany obszar.
+```c
+p1 *msg = (p1*)malloc(sizeof(p1));
+```
+- msgsnd(msqid, msgp, msgsz, msgflg) - Wysyła komunikat do kolejki komunikatów.
+```c
+int f;
+p1 *msg;
+if (msgsnd(f, msg, sizeof(p1) - sizeof(long), 0) != -1)
+```
+- msgrcv(msqid, msgp, msgsz, msgtyp, msgflg) - Odbiera komunikat z kolejki komunikatów.
+```c
+int f1;
+p2 *praca;
+msgrcv(f1, praca, sizeof(p2) - sizeof(long), 3, 0);
+```
+- scanf(format, ...) - Funkcja odczytująca dane z wejścia na podstawie podanego formatu.
+```c
+scanf("%lf", &a);
+```
+- printf(format, ...) - Funkcja wyświetlająca sformatowane dane na standardowym wyjściu (ekranie).
+```c
+printf("%lf\n", a, praca->el);
+```
+- free(ptr) - Zwalnia zaalokowaną pamięć, na którą wskazuje wskaźnik.
+```c
+free(praca);
+```
+- msgctl(msqid, cmd, buf) - Wykonuje różne operacje na kolejkach komunikatów, takie jak usuwanie kolejki komunikatów.
+```c
+int f1;
+msgctl(f1, IPC_RMID, NULL);
+```
