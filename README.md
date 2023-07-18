@@ -7,45 +7,49 @@
 ## Funkcje
 
 ### FIFO:
-- close: Zamyka otwarty deskryptor pliku.
-- unlink: Usuwa plik z systemu plików.
-- open: Otwiera plik.
-- read: Odczytuje dane z deskryptora pliku.
-- write: Zapisuje dane do deskryptora pliku.
-- wait: Oczekuje na zakończenie procesu potomnego.
+- mknod(): Tworzy węzeł w systemie plików. - make node
+- write(): Zapisuje dane do deskryptora pliku.
+- read(): Odczytuje dane z deskryptora pliku.
+- wait(): Oczekuje na zakończenie procesu potomnego.
+  
 ### Kolejka komunikatów:
-- ftok: Przekształca ścieżkę pliku w klucz IPC.  - file to key
-- msgget: Uzyskuje identyfikator kolejki komunikatów IPC.  - message get
-- msgsnd: Wysyła komunikat do kolejki komunikatów IPC.  - message send
-- msgrcv: Odbiera komunikat z kolejki komunikatów IPC.  - message receive
-- msgctl: Kontroluje kolejkę komunikatów IPC.  - message control
+- msgget(): Uzyskuje identyfikator kolejki komunikatów IPC. - message get
+- msgsnd(): Wysyła komunikat do kolejki komunikatów IPC. - message send
+- msgrcv(): Odbiera komunikat z kolejki komunikatów IPC. - message receive
+- msgctl(): Kontroluje kolejkę komunikatów IPC. - message control
+  
 ### Semafory:
-- semget: Uzyskuje identyfikator zbioru semaforów.  - semaphore get
-- semop: Wykonuje operacje na semaforach.  - semaphore operation
-- shmat: Dołącza segment pamięci współdzielonej do przestrzeni adresowej procesu.  - semaphore memory attach
-- shmdt: Odłącza segment pamięci współdzielonej od przestrzeni adresowej procesu.  - shared memory detach
-- shmctl: Kontroluje segment pamięci współdzielonej.  - shared memory control
-- semctl: Kontroluje zbiór semaforów.  - semaphore control
+- semget(): Uzyskuje identyfikator zbioru semaforów. - semaphore get
+- semctl(): Kontroluje zbiór semaforów. - semaphore control
+- semop(): Wykonuje operacje na semaforach. - semaphore operation
+- shmget() - shared memory get
+- shmat(): Dołącza segment pamięci współdzielonej do przestrzeni adresowej procesu. - shared memory attach
+- shmdt(): Odłącza segment pamięci współdzielonej od przestrzeni adresowej procesu. - shared memory detach
+- shmctl(): Kontroluje segment pamięci współdzielonej. - shared memory control
+- strdup() - string duplicate
+- atoi() - ascii to integer
+
 ### Inne:
-- exit: Kończy program i powraca do systemu operacyjnego.
-- signal: Instaluje obsługę sygnału.
-- sigignore: Ignoruje sygnał.  - signal ignore
-- mknod: Tworzy węzeł w systemie plików.  - make node
-- fork: Tworzy nowy proces poprzez duplikowanie bieżącego procesu.  - process fork
-- strcpy: Kopiuje łańcuch znaków.  - string copy
-- strlen: Zwraca długość łańcucha znaków.  - string length
-- sprintf: Formatowany zapis do łańcucha znaków.  - string printf
-- fprintf - formatted print to file
-- printf: Wypisuje sformatowane dane na standardowym wyjściu.
-- getpid: Zwraca identyfikator procesu.  - get pid
-- scanf: Wczytuje dane z wejścia.
-- malloc: Alokacja pamięci dynamicznej.  - memory allocation
-- free: Zwalnia zaalokowaną pamięć.
-- strndup: Tworzy kopię łańcucha znaków z ograniczeniem długości.  - string duplicate with length
-- strdup - string duplicate
-- access: Sprawdza dostępność pliku.
-- strerror - string error
-- atoi - ascii to integer
+- exit(): Kończy program i powraca do systemu operacyjnego.
+- signal(): Instaluje obsługę sygnału.
+- getpid(): Zwraca identyfikator procesu. - get pid
+- scanf(): Wczytuje dane z wejścia.
+- close(): Zamyka otwarty deskryptor pliku.
+- open(): Otwiera plik.
+- unlink(): Usuwa plik z systemu plików.
+- strcpy(): Kopiuje łańcuch znaków. - string copy
+- sprintf(): Formatowany zapis do łańcucha znaków. - string printf
+- fork(): Tworzy nowy proces poprzez duplikowanie bieżącego procesu. - process fork
+- ftok(): Przekształca ścieżkę pliku w klucz IPC. - file to key
+- malloc(): Alokacja pamięci dynamicznej. - memory allocation
+- free(): Zwalnia zaalokowaną pamięć.
+- strndup(): Tworzy kopię łańcucha znaków z ograniczeniem długości. - string duplicate with length
+- access(): Sprawdza dostępność pliku.
+- printf(): Wypisuje sformatowane dane na standardowym wyjściu.
+- strlen(): Zwraca długość łańcucha znaków. - string length
+- sprintf(): Formatowany zapis do łańcucha znaków. - string printf
+- sigignore(): Ignoruje sygnał. - signal ignore
+- strerror() - string error
 
 ### Przykłady:
 - close
