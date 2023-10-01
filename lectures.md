@@ -1,0 +1,475 @@
+# Wykład 1. - 15. października 2022
+- Wprowadzenie.
+- System operacyjny.
+- Pliki i systemy plików.
+- Prawa dostępu do plików.
+- Procesy, zarządzanie procesami, stan procesu, przestrzeń adresowa.
+- Sygnały.
+- Śledzenie procesów.
+Pliki, użytkownicy, procesy\
+Procesy, cechy procesów, tworzenie nowych procesów\
+Komunikacja między procesami - sygnały, łącza komunikacyjne, śledzenie procesu
+# Wykład 2. - 23. października 2022
+- Potoki.
+- Kolejki FIFO.
+- Model klient-serwer.
+- Komunikacja między procesami - IPC.
+- Kolejki komunikatów.
+- Semafory.
+- Pamięć wspólna.
+- IPC standardu POSIX.
+- Kolejki komunikatów.
+- Semafory nazwane i nienazwane.
+- Wątki standardu POSIX.
+    - Ogólna charakterystyka wątków.
+    - Tworzenie wątku: pthread_create.
+    - Oczekiwanie na zakończenie wątku i pobranie przekazanych przez niego wartości: pthread_join.
+    - Pobranie własnego identyfikatora przez wątek: pthread_self.
+    - Odłączanie wątku: pthread_detach.
+    - Kończenie pracy wątku: pthread_exit.
+    - Kompilację programu wielowątkowego możemy wykonać następującym poleceniem: gcc -l pthread -o program program.c.
+- Synchronizacja wątków i procesów według standardu POSIX.
+    - Rygiel (muteks)
+        - Ogólna charakterystyka rygla jako obiektu wzajemnego wykluczania.
+		- Zmienna reprezentująca rygiel w systemie: pthread_mutex_t.
+		- Statyczna inicjalizacja rygla: pthread_mutex_t static rygiel=PTHREAD_MUTEX_INITIALIZER.
+		- Dynamiczna inicjalizacja rygla: pthread_mutex_init.
+		- Niszczenie rygla: pthread_mutex_destroy.
+		- Dynamiczna inicjalizacja zmiennej zawierającej atrybuty rygla: pthread_mutexattr_init.
+		- Niszczenie zmiennej zawierającej atrybuty rygla: pthread_mutexattr_destroy.
+		- Manipulacja atrybutami rygla w zmiennej je zawierającej:
+			- pthread_mutexattr_getprioceiling,
+			- pthread_mutexattr_getprotocol,
+			- pthread_mutexattr_getpshared
+			- pthread_mutexattr_gettype,
+			- pthread_mutexattr_setprioceiling,
+			- pthread_mutexattr_setprotocol,
+			- pthread_mutexattr_setpshared,
+			- pthread_mutexattr_settype,
+			- pthread_mutex_getprioceiling,
+			- pthread_mutex_setprioceilin.
+		- Oczekiwanie na zwolnienie rygla:
+			- blokowane: pthread_mutex_lock,
+			- nieblokowane: pthread_mutex_trylock.
+		- Zwalnianie rygla: pthread_mutex_unlock.
+	- Zmienne warunkowe.
+		- Ogólna charakterystyka zmiennej warunkowej jako obiektu zapeniającego oczekiwanie i sygnalizację w systemie.
+		- Zmienna reprezentująca zmienną warunkową w systemie: pthread_cond_t.
+		- Statyczna inicjalizacja zmiennej warunkowej: static pthread_cond_t cond=PTHREAD_COND_INITIALIZER.
+		- Dynamiczna inicjalizacja zmiennej warunkowej: pthread_cond_init.
+		- Niszczenie zmiennej warunkowej: pthread_cond_destroy.
+		- Dynamiczna inicjalizacja zmiennej zawierającej atrybuty zmiennej warunkowej: pthread_condattr_init.
+		- Niszczenie zmiennej zawierającej atrybuty zmiennej warunkowej: pthread_condattr_destroy.
+		- Manipulacja atrybutami zmiennej warunkowej w zmiennej je zawierającej:
+			- pthread_condattr_getpshared,
+			- pthread_condattr_setpshared.
+		- Oczekiwanie na spełnienie określonego warunku:
+			- blokowane: pthread_cond_wait,
+			- z określeniem maksymalnego czasu blokowania: pthread_cond_timedwait.
+		- Sygnalizacja spełnienia określonego warunku:
+			- do jednego oczekującego wątku: pthread_cond_signal,
+			- do wszystkich oczekujących wątków: pthread_cond_broadcast.
+	- Rygle odczytu-zapisu.
+		- Ogólna charakterystyka rygli odczytu-zapisu jako elementu wzajemnego wykluczania między czytelnikami a pisarzem, podanie kryteriów przydziału takiego rygla.
+		- Zmienna reprezentująca rygiel w systemie: pthread_rwlock_t.
+		- Statyczna inicjalizacja rygla: pthread_rwlock_t static rwlock=PTHREAD_RWLOCK_INITIALIZER.
+		- Dynamiczna inicjalizacja rygla: pthread_rwlock_init.
+		- Niszczenie rygla: pthread_rwlock_destroy.
+		- Dynamiczna inicjalizacja zmiennej zawierającej atrybuty rygla: pthread_rwlockattr_init.
+		- Niszczenie zmiennej zawierającej atrybuty rygla: pthread_rwlockattr_destroy.
+		- Manipulacja atrybutami rygla w zmiennej je zawierającej:
+			- pthread_rwlockattr_getpshared,
+			- pthread_rwlockattr_setpshared.
+		- Oczekiwanie na zwolnienie rygla:
+			- blokowane dla czytelnika: pthread_rwlock_rdlock,
+			- nieblokowane dla czytelnika: pthread_rwlock_tryrdlock,
+			- blokowane dla pisarza: pthread_rwlock_wrlock,
+			- nieblokowane dla pisarza: pthread_rwlock_trywrlock.
+		- Zwalnianie rygla: pthread_rwlock_unlock.
+- Model OSI.
+Komunikacja między procesami - sygnały, łącza komunikacyjne, śledzenie procesu\
+IPC w systemie V - kolejki komunikatów\
+IPC w systemie V - semafory i pamięć wspólna\
+IPC standardu POSIX\
+Modele OSI, TCP/IP i hybrydowy, protokoły sieciowe
+# Wykład 3. - 6. listopada 2022
+- Protokół IPv4.
+- Protokół IPv6.
+- Warstwa transportu.
+- Gniazda.
+- Protokół TCP.
+- Komunikacja procesów.
+- Scenariusz komunikacji.
+- Przysyłanie danych przez sieć.
+- Adresacja gniazd.
+- Konwersja nazw.
+Modele OSI, TCP/IP i hybrydowy, protokoły sieciowe\
+Warstwa transportowa - gniazda
+# Wykład 4. - 20. listopada 2022
+- Nazwy słowne.
+	- Translacja nazw hostów.
+	- Translacja nazw protokołów.
+	- Translacja nazw usług.
+- Adresacja gniazd.
+	- Rodzina internetowa: IPv4 i IPv6.
+	- Rodzina uniksowa.
+- Konwersja nazw i adresów.
+- Sesja połączeniowa.
+	- Tworzenie gniazd.
+	- Zamknięcie gniazd.
+	- Tworzenie kolejki.
+	- Akceptacja zgłoszenia klienta.
+	- Nawiązywanie połączenia przez klienta.
+	- Wymiana danych.
+- Sesja bezpołączeniowa.
+	- Tworzenie gniazd.
+	- Zamknięcie gniazd.
+	- Wysyłanie danych.
+	- Odbieranie danych.
+- Multipleksacja (przełączenie) - mechanizm select.
+- Para gniazd.
+- SuperSerwer inetd, xinetd.
+- Poczta elektroniczna.
+	- Terminologia.
+	- Protokół SMTP.
+	- Protokół POP3.
+	- Protokół IMAP.
+	- Ochrona serwera SMTP przed spamem.
+	- Ochrona poczty przed wirusami.
+- Protokoły SSL i TLS.
+	- Charakterystyka protokołu SSL i TLS.
+	- Algorytm Diffiego-Hellmana wymiany klucza.
+	- Wymiana klucza oparta o klucz publiczny.
+	- Wersje protokołów SSL i TLS.
+	- Architektura i zastosowania SSL/TLS, interfejs programistyczny.
+	- Algorytmy kryptograficzne i funkcje skrótu dostępne w TLS.
+	- Składowe protokołu SSL/TLS.
+		- Record Protocol.
+		- Handshake Protocol.
+		- Change Cipher Spec.
+		- Alert Protocol.
+	- Schemat działania protokołu SSL/TLS.
+	- Schemat działania Handshake Protocol.
+		- Komunikat ClientHello.
+		- Komunikat ServerHello.
+		- Komunikat ServerCertificate.
+		- Komunikat (opcjonalny) ServerCertificateRequest.
+		- Komunikat ServerKeyExchange.
+		- Komunikat ServerHelloDone.
+		- Komunikat (opcjonalny) ClientCertificate.
+		- Komunikat ClientKeyExchange.
+		- Komunikat (opcjonalny) ClientCertificateVerify.
+		- Komunikat ClientChangeCipherSpec.
+		- Komunikat ClientFinished.
+		- Komunikat ServerChangeCipherSpec.
+		- Komunikat ServerFinished.
+	- Instytucje uwierzytelniające CA.
+	- Podstawowe funkcje PKI.
+	- Weryfikacja wiarygodności serwera.
+	- Poziom zaufania do certyfikatów.
+	- Zawartość certyfikatu.
+	- Zalety i wady systemu certyfikatów.
+- Usługa HTTP i HTTPS.
+	- URI - unikalny identyfikator zasobu, URL - unikalny lokalizator zasobów. Każdy URL jest URI.
+	- Ogólna postać URL: scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment].
+	- Żądania HTTP.
+	- Odpowiedzi HTTP.
+	- Metody HTTP: GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE.
+	- Nagłówki HTTP.
+	- Ciasteczka.
+	- Statusy HTTP.
+- XML.
+	- Charakterystyka.
+	- Znaczniki.
+	- Atrybuty.
+	- Nazwy XML.
+	- Encje.
+	- Przestrzenie nazw.
+	- Instrukcje przetwarzające.
+	- Deklaracje.
+	- Poprawność składniowa.
+	- Poprawność strukturalna.
+Warstwa transportowa - gniazda\
+Gniazda, tryb połączeniowy, programowanie\
+Gniazda, tryb bezpołączeniowy, programowanie\
+Gniazda, multipleksowanie, SuperSerwer inetd, xinetd\
+Poczta elektroniczna
+# Wykład 5. - 4. grudnia 2022
+- DTD.
+	- Budowa dokumentu DTD.
+	- Części składowe dokumentu widziane przez DTD: elementy, atrybuty, encje, łańcuchy znaków PCDATA i CDATA.
+	- Deklaracja ELEMENT.
+		- Element pusty.
+		- Element z dowolną treścią.
+		- Element z przeanalizowanymi danymi znakowymi.
+		- Element z potomkami.
+			- Element występuje dokładnie raz.
+			- Element występuje co najmniej raz.
+			- Element występuje zero lub więcej razy.
+			- Element występuje zero lub raz.
+			- Alternatywa elementów.
+			- Elementy mieszane.
+	- Deklaracja ATTLIST.
+		- Typy atrybutów.
+			- CDATA.
+			- Wyliczenie możliwych wartości.
+			- ID.
+			- IDREF.
+			- IDREFS.
+			- NMTOKEN.
+			- NMTOKENS.
+			- ENTITY.
+			- ENTITIES.
+			- NOTATION.
+			- xml:.
+		- Wartości atrybutów.
+			- Wartość - domyślna wartość atrybutu.
+			- #REQUIRED - wymagana.
+			- #IMPLIED - ukryta.
+			- #FIXED - ustalona.
+	- Deklaracja ENTITY.
+		- Wewnętrzna.
+		- Zewnętrzna.
+- XMLSchema.
+	- Budowa dokumentu XMLSchema.
+	- Znacznik xs:schema.
+	- Znaczniki xs:element i xs:attribute.
+		- Przykładowe typy.
+			- Typy łańcuchowe.
+				- xs:string.
+				- xs:normalizedString.
+				- xs:token.
+				- ...
+			- Typy datowe.
+				- xs:date.
+				- xs:time.
+				- xs:dateTime.
+				- xs:duration.
+				- ...
+			- Typy numeryczne.
+				- xs:decimal.
+				- xs:integer.
+				- ...
+			- Inne.
+				- xs:boolean.
+				- xs:hexBinary.
+				- xs:anyURI.
+				- ...
+			- Wartości domyślne (default) i ustalone (fixed).
+		- Znacznik xs:simpleType - typ prosty.
+		- Znacznik xs:restriction - ograniczenia wartości.
+			- xs:enumeration.
+			- xs:fractionDigits.
+			- xs:length.
+			- xs:maxExclusive.
+			- xs:maxInclusive.
+			- xs:maxLength.
+			- xs:minExclusive.
+			- xs:minInclusive.
+			- xs:minLength.
+			- xs:pattern.
+			- xs:totalDigits.
+			- xs:whiteSpace: preserve, replace, collapse.
+		- Znacznik xs:complexType - element złożony: element pusty, element, który zawiera tylko inne elementy, element, który zawiera tylko tekst, element zawierający zarówno inne  elementy jak i tekst.
+			- xs:sequence.
+			- xs:complexContent - definiuje rozszerzenia (xs:extension) albo ograniczenia elementu złożonego zawierającego zarówno inne  elementy jak i tekst.
+			- xs:simpleContent - definiuje rozszerzenia (xs:extension) albo ograniczenia elementu złożonego zawierający tylko tekst.
+			- Atrybut mixed.
+		- Indykatory.
+			- Uporządkowania: xs:all, xs:choice, xs:sequence.
+			- Występowania: maxOccurs, minOccurs.
+			- Grupujące: xs:group, xs:attributeGroup.
+	- Znacznik xs:any. 
+	- Znacznik: xs:anyAttribute.
+	- Konstrukcja substitutionGroup.
+	- Konstrukcja block=substitution.
+	- Komentarze.
+		- Znacznik xs:annotation.
+		- Znacznik xs:appinfo.
+		- Znacznik xs:documentation.
+	- Znacznik xs:list.
+	- Znacznik xs:union.
+	- Znacznik xs:notation.
+	- Znacznik xs:redefine.
+	- Znacznik xs:field.
+	- Znacznik xs:import.
+	- Znacznik xs:include.
+	- Znacznik xs:key.
+	- Znacznik xs:keyref.
+	- Znacznik xs:selector.
+	- Znacznik xs:unique.
+- JSON.
+	- Opis formatu.
+	- Wspierane typy danych: null, boolean, object, array, number, string.
+	- Element główny.
+	- Przetwarzanie dokumentów w formacie JSON.
+- JSchema.
+	- Plik ze wzorcem ma rozszerzenie .jschema.
+	- Typy podstawowe
+		- @string.
+		- @boolean.
+		- @date.
+		- @uri.
+		- @int.
+		- @number.
+	- Typy pochodne.
+		- * - "dzika karta".
+		- typ tablicowy.
+		- typ wyliczeniowy.
+		- typ strukturalny.
+- JSONSchema.
+	- Słowa kluczowe schematu.
+		- $schema.
+		- $vocabulary.
+		- $id.
+		- $anchor.
+		- $dynamicAnchor.
+		- $ref.
+		- $dynamicRef.
+		- $defs.
+		- $comment.
+	- Słowa kluczowe do stosowania w schematach podrzędnych.
+		- Słowa odpowiadające operatorom logicznym.
+			- allOf.
+			- anyOf.
+			- oneOf.
+			- not.
+		- Słowa odpowiadające warunkowemu stosowaniu w schematach podrzędnych.
+			- if.
+			- then,
+			- else.
+			- dependentSchemas.
+		- Słowa odpowiadające w schematach podrzędnych potomków.
+			- prefixItems.
+			- items.
+			- contains.
+		- Słowa odpowiadające w schematach podrzędnych obiektom.
+			- properties.
+			- patternProperties.
+			- additionalProperties.
+			- propertyNames.
+		- Słowa kluczowe walidacji dla instancji dowolnego typu.
+			- type: null, boolean, object, array, number, string, integer.
+			- enum.
+			- const.
+		- Słowa kluczowe walidacji dla instancji liczb i liczb całkowitych.
+			- multipleOf.
+			- maximum.
+			- exclusiveMaximum.
+			- minimum.
+			- exclusiveMinimum.
+		- Słowa kluczowe walidacji dla łańcuchów.
+			- maxLength.
+			- minLength.
+			- pattern.
+		- Słowa kluczowe walidacji dla tablic.
+			- maxItems.
+			- minItems.
+			- uniqueItems.
+			- maxContains.
+			- minContains.
+		- Słowa kluczowe walidacji dla obiektów.
+			- maxProperties.
+			- minProperties.
+			- required.
+			- dependentRequired.
+		- Słowo kluczowe format.
+			- Data, godzina, czas trwania.
+				- date-time: YYYY:MM::DDThh:mm:ss.sTZD.
+				- date: YYYY-MM-DD.
+				- time: hh:mm:ss.sTZD.
+				- duration (standard SO 8601).
+			- Adresy e-maliowe.
+				- email.
+				- idn-email.
+			- Adres węzła.
+				- hostname.
+				- idn-hostname.
+			- Adresy ip.
+				- ipv4.
+				- ipv6.
+			- Identyfikatory zasobów.
+				- uri.
+				- uri-reference.
+				- iri.
+				- iri-reference.
+				- uuid.
+				- uri-template.
+			- Wskaźniki JSON.
+				- json-pointer.
+				- relative-json-pointer.
+			- Wyrażenie: regex.
+		- Słowa kluczowe dotyczące zawartości łańcuchów (dane mogą zawierać inne informacje niż JSON).
+			- contentEncoding.
+				- binary.
+				- base64.
+				- quoted-printable.
+			- contentMediaType.
+			- contentSchema.
+		- Słowa kluczowe dla adnotacji metadanych.
+			- title.
+			- description.
+			- default.
+			- deprecated.
+			- default.
+			- deprecated.
+			- readOnly.
+			- writeOnly.
+			- examples.
+- Zdalne wywołanie procedur RPC.
+- Sieciowy system plików NFS.
+- gRPC.
+	- Charakterystyka systemu.
+	- Bufory protokołów.
+		- Numery pół.
+		- Role pól.
+			- singular.
+			- optional.
+			- repeated.
+			- map.
+		- Pola zarezerwowane.
+		- Typy wartości skalarnych pól, wartości domyślne typów skalarnych.
+		- Typy wyliczeniowe, aliasy nazw elementów.
+		- Importowanie definicji.
+		- Wiadomości zagnieżdżone.
+		- Przetwarzanie nieznanych pól.
+	- Definiowanie serwisów, rodzaje serwisów.
+		- Jednoargumentowy.
+		- Przysyłanie strumieniowe serwera.
+		- Przesyłanie strumieniowe klienta.
+		- Dwukierunkowe przesyłanie strumieniowe.
+		- Możliwość definiowania czasów oczekiwania na żądanie lub wynik.
+	- Implementacja serwisu i klienta.
+	- Komunikacja asynchroniczna w gRPC.
+	- Autentykacja ALTS klienta i serwera.
+- XML-RPC.
+	- Charakterystyka systemu.
+	- Żądanie XML-RPC.
+		- Metoda POST protokołu HTTP.
+		- Wymagania dotyczące nagłówka.
+			- User-Agent.
+			- Host.
+			- Content-Type ustawione na text/xml.
+			- Content-Length.
+		- Definiowanie dokumentu XML wywołującego zdalną procedurę.
+			- Znacznik główny methodCall.
+			- Znacznik główny musi zawierać znacznik methodName.
+			- Jeżeli zdalna procedura posiada parametry, to znacznik główny musi zawierać znacznik params, który może zawierać pewną liczbę znaczników param. Możliwe typy parametrów.
+				- Wartości skalarne, znacznik value.
+					- i4 lub int.
+					- boolean.
+					- string.
+					- double.
+					- dateTime.iso8601.
+					- base64.
+				- Struktury, znaczniki struct, member, name i value.
+				- Tablice, znaczniki array, data, value.
+	- Odpowiedź XML-RPC.
+		- Poprawna odpowiedź zwraca kod 200.
+		- Nagłówek zawiera Content-Type ustawione na text/xml.
+		- Znacznik główny methodResponse.
+		- Znacznik główny może zawierać pojedynczy znacznik params, który zawiera pojedynczy znacznik param zawierający pojedynczy znacznik value.
+		- Znacznik główny może zawierać również znacznik fault zawierający znacznik value, który zawiera znacznik struct posiadający pola faultCode typu int i faultString typu string.
+	- Używanie formatu JSON.
+Zdalne wywołanie procedur RPC\
+Sieciowy system plików NFS
