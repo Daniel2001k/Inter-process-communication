@@ -1,34 +1,38 @@
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
+#include <math.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
 
 int main()
 {
-    int file = open("/tmp/fifo", O_RDWR);
+        int file = open("/tmp/fifo", O_RDWR);
 
-    double x = 10;
-    long d = 2;
+        double a;
+        long b;
 
-    scanf("%lf", &x);
-    scanf("%ld", &d);
+        double power;
+        double result;
 
-    double xPowed;
-    double result;
+        scanf("%lf", &a);
+        scanf("%ld", &b);
 
-    write(file, &x, sizeof(double));
-    write(file, &d, sizeof(long));
+        write(file, &a, sizeof(double));
+        write(file, &b, sizeof(long));
 
-    sleep(1);
+        sleep(1);
 
-    read(file, &xPowed, sizeof(double));
+        read(file, &power, sizeof(double));
+        result = power + 10;
+        write(file, &result, sizeof(double));
 
-    result = xPowed + 15;
-    
-    write(file, &result, sizeof(double));
-
-    close(file);
-    return 0;
+        close(file);
+        return 0;
 }
