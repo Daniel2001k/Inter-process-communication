@@ -1,40 +1,48 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <signal.h>
+
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <math.h>
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <sys/types.h>
 
 #define SHM_SIZE 1024
-#define SEM_KEY 1234
-
-void error(const char *msg)
-{
-    perror(msg);
-    exit(1);
-}
+#define SHM_KEY 1234
 
 int main()
 {
-    int shmid = shmget(SEM_KEY, SHM_SIZE, 0666);
-    char *shmaddr = shmat(shmid, (void *)0, 0);
-    int semid = semget(SEM_KEY, 1, 0666);
+        int shmid = shmget(SHM_KEY, SHM_SIZE, 0666);
+        int semid = semget(SHM_KEY, 1, 0666);
+        char *shmaddr = shmat(shmid, (void*)0, 0);
 
-    printf("Wpisz wiadomosc: (np: test1,2,5)");
-    fgets(shmaddr, SHM_SIZE, stdin);
+        fgets(shmaddr, SHM_SIZE, stdin);
 
-    struct sembuf sem_op = {0 , 1, 0};
+        struct sembuf sem_st = {0, 1, 0};
 
-    semop(semid, &sem_op, 1);
+        semop(semid, &sem_st, 1);
 
-    sem_op.sem_op = -1;
-    
-    semop(semid, &sem_op, 1);
+        sem_st.sem_op = -1;
 
-    printf("Odpowiedz serwera: %s\n", shmaddr);
+        semop(semid, &sem_st, 1);
 
-    shmdt(shmaddr);
+        char result[100];
 
-    return 0;
+        sprintf(result, "Klient - %s", shmaddr);
+
+        sprintf(shmaddr, "%s", result);
+        printf("Wysylam: %s\n", shmaddr);
+
+        sem_st.sem_op = 1;
+        semop(semid, &sem_st, 1);
+
+        shmdt(shmaddr);
+
+        return 0;
 }
