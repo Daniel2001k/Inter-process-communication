@@ -1,71 +1,70 @@
-#include <stdio.h>
-#include <signal.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+#include <errno.h>
 
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#include <errno.h>
+char path[] = "/tmp/kolejki";
+int queue_id;
 
-char path[]="/tmp/aa";
-
-typedef struct mystring {
-    long mtype;
-    char text[1024];
+typedef struct mystring
+{
+        long mtype;
+        char text[1024];
 } message_s;
 
-typedef struct mydouble {
-    long mtype;
-    double liczba;
+typedef struct mydouble
+{
+        long mtype;
+        double number;
 } message_d;
 
+message_s* msg_s;
+message_d* msg_d;
 
-int main(){
+int main()
+{
+        size_t msg_s_size = sizeof(message_s) - sizeof(long);
+        size_t msg_d_size = sizeof(message_d) - sizeof(long);
 
-    key_t key = ftok(path, 0);
+        key_t key = ftok(path, 0);
+        queue_id = msgget(key, 0666);
 
-    int queue_id = msgget(key, 0600 );
+        msg_s = malloc(sizeof(message_s));
+        msg_d = malloc(sizeof(message_d));
 
-    message_d* msg_d;
-    message_s* msg_s;
-    msg_d = malloc(sizeof(message_d));
-    msg_s = malloc(sizeof(message_s));
+        msg_s->mtype= 1;
+        sprintf(msg_s->text, "auto");
 
-    msg_s->mtype = 1;
-    sprintf(msg_s->text,"auto");
+        msg_d->mtype = 2;
+        msg_d->number = -7.23;
 
+        msgsnd(queue_id, (void*)msg_s, msg_s_size, 0);
+        msgsnd(queue_id, (void*)msg_d, msg_d_size, 0);
 
-    msg_d->mtype = 2;
-    msg_d->liczba = -7.23;
+        msgrcv(queue_id, (void*)msg_s, msg_s_size, 3, 0);
+        msgrcv(queue_id, (void*)msg_d, msg_d_size, 3, 0);
 
-    int msg_size_s = sizeof(message_s) - sizeof(long);
-    int msg_size_d = sizeof(message_d) - sizeof(long);
+        printf("Odebralem: %s i %lf\n", msg_s->text, msg_d->number);
 
-    msgsnd(queue_id, msg_s, msg_size_s, 0);
+        sprintf(msg_s->text, "%s - %lf - Klient", msg_s->text, msg_d->number);
 
-    printf("wyslalem wiadomosc: %s\n",msg_s->text);
+        msg_s->mtype = 4;
+        msg_d->mtype = 4;
 
-    msgsnd(queue_id, msg_d, msg_size_d, 0);
+        msgsnd(queue_id, (void*)msg_s, msg_s_size, 0);
 
-    printf("wyslalem wiadomosc: %lf\n",msg_d->liczba);
+        printf("Wyslalem wiadomosc: %s\n", msg_s->text);
 
-    msgrcv(queue_id, msg_s, msg_size_s, 3 ,0);
-    
-    printf("odebralem wiadomosc: %s\n",msg_s->text);
+        free(msg_s);
+        free(msg_d);
 
-    msgrcv(queue_id, msg_d, msg_size_d, 3 ,0);
-
-    printf("odebralem wiadomosc: %lf\n",msg_d->liczba);
-
-    sprintf(msg_s->text,"%sKLIENT",msg_s->text);
-     
-    msg_s->mtype = 4;
-    msg_d->mtype = 4;
-
-    msgsnd(queue_id, msg_s, msg_size_s, 0);
-    
-    printf("wyslalem wiad %s\n",msg_s->text);
-
-    free(msg_d);
-    free(msg_s);
+        return 0;
 }
