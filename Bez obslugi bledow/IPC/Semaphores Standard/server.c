@@ -24,12 +24,10 @@ int main()
                 char *shmaddr = shmat(shmid, (void*)0, 0);
                 int semid = semget(SHM_KEY, 1, IPC_CREAT | 0666);
 
-                struct sembuf sem_st = {0, 0, 0};
-
+                struct sembuf sem_st = {0, 0, 0};
                 semop(semid, &sem_st, 1);
 
-                sem_st.sem_op = -1;
-
+                sem_st.sem_op = -1;
                 semop(semid, &sem_st, 1);
 
                 printf("Wiadomosc: %s\n", shmaddr);
@@ -42,8 +40,7 @@ int main()
 
                 sprintf(shmaddr, "Serwer: %s - %lf", ws, wd1 * wd2);
 
-                sem_st.sem_op = 1;
-
+                sem_st.sem_op = 1;
                 semop(semid, &sem_st, 1);
 
                 sem_st.sem_op = -1;
