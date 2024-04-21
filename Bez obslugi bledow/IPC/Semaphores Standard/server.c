@@ -36,8 +36,7 @@ int main()
                 double wd1;
                 double wd2;
 
-                sscanf(shmaddr, "%s %lf %lf", ws, &wd1, &wd2);
-
+                sscanf(shmaddr, "%s %lf %lf", ws, &wd1, &wd2);
                 sprintf(shmaddr, "Serwer: %s - %lf", ws, wd1 * wd2);
 
                 sem_st.sem_op = 1;
