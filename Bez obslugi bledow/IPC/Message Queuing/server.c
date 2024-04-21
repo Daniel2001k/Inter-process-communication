@@ -1,94 +1,91 @@
-#include <stdio.h>
-#include <signal.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+#include <errno.h>
 
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-char path[]="/tmp/aa";
-
+char path[] = "/tmp/kolejki";
 int queue_id;
 
-typedef struct mystring {
-    long mtype;       
-    char text[1024];   
+typedef struct mystring
+{
+        long mtype;
+        char text[1024];
 } message_s;
 
-typedef struct mydouble {
-    long mtype;         
-    double liczba;
+typedef struct mydouble
+{
+        long mtype;
+        double number;
 } message_d;
 
-message_d* msg_d;
 message_s* msg_s;
+message_d* msg_d;
 
-void usun_wszystko(){
-    msgctl(queue_id, IPC_RMID, NULL);
-    free(msg_d);
-    free(msg_s);
-    unlink(path);
-    printf("server zakonczyl prace\n");
-    exit(0);
-}
+void al()
+{
+        msgctl(queue_id, IPC_RMID, NULL);
 
+        free(msg_s);
+        free(msg_d);
 
-int main(){
-    
-    signal(SIGTERM, usun_wszystko);
-    signal(SIGINT, usun_wszystko);
-
-
-    size_t msg_size_s = sizeof(message_s) - sizeof(long);
-    size_t msg_size_d = sizeof(message_d) - sizeof(long);
-
-    
-    int file = open(path, O_EXCL | O_CREAT | 0666);
-    close(file);
-    
-    if(access(path, F_OK) == -1){
         unlink(path);
-        perror("no access");
-        return -1;
-    }
 
-    //key_t key;
-    key_t key = ftok(path, 0);
+        printf("Koniec pracy serwera");
 
-    msg_s = malloc(sizeof(message_s));
-    msg_d = malloc(sizeof(message_d));
-
-    queue_id = msgget(key, O_EXCL | IPC_CREAT | 0600);
-
-    for(;;){
-        msgrcv(queue_id, (void*)msg_s, msg_size_s, 1, 0);
-        printf("odebralem wiad %s\n",msg_s->text);
-
-        msgrcv(queue_id, (void*)msg_d, msg_size_d, 2, 0);
-        printf("odebralem wiad %lf\n",msg_d->liczba);
-
-        msg_s->mtype = 3;
-        sprintf(msg_s->text, "%s %lf", msg_s->text, msg_d->liczba);
-
-        msg_d->mtype = 3;
-        msg_d->liczba = msg_d->liczba * msg_d->liczba;
-
-        
-        msgsnd(queue_id, (void*)msg_s, msg_size_s, 0);
-        printf("wyslalem wiad %lf\n",msg_d->liczba);
-        
-        msgsnd(queue_id, (void*)msg_d, msg_size_d, 0);
-        printf("wyslalem wiad %s\n",msg_s->text);
-
-        msgrcv(queue_id, (void*)msg_s, msg_size_s, 4, 0);
-        printf("odebralem wiad %s\n",msg_s->text);
-        printf("%s\n",msg_s->text);
-    }
-
-    return 0;
+        exit(0);
 }
-// ssize_t msgrcv(int msqid,       void *msgp, size_t msgsz, long msgtyp, int msgflg);
-//     int msgsnd(int msqid, const void *msgp, size_t msgsz,              int msgflg);
+
+int main()
+{
+        signal(SIGTERM, al);
+        signal(SIGINT, al);
+
+        size_t msg_s_size = sizeof(message_s) - sizeof(long);
+        size_t msg_d_size = sizeof(message_d) - sizeof(long);
+
+        int file = open(path, O_EXCL | O_CREAT | 0666);
+
+        if (access(path, F_OK) == -1)
+        {
+                perror("Brak dostepu do pliku");
+                unlink(path);
+                return -1;
+        }
+
+        close(file);
+
+        key_t key = ftok(path, 0);
+
+        msg_s = malloc(sizeof(message_s));
+        msg_d = malloc(sizeof(message_d));
+
+        queue_id = msgget(key, O_EXCL | IPC_CREAT | 0666);
+
+        for(;;)
+        {
+                msgrcv(queue_id, (void*)msg_s, msg_s_size, 1, 0);
+                msgrcv(queue_id, (void*)msg_d, msg_d_size, 2, 0);
+
+                msg_s->mtype = 3;
+                sprintf(msg_s->text, "%s %lf", msg_s->text, msg_d->number);
+
+                msg_d->mtype = 3;
+                msg_d->number = pow(msg_d->number, 2);
+
+                msgsnd(queue_id, (void*)msg_s, msg_s_size, 0);
+                msgsnd(queue_id, (void*)msg_d, msg_d_size, 0);
+
+                msgrcv(queue_id, (void*)msg_s, msg_s_size, 4, 0);
+                printf("Odebralem wiadomosc: %s\n", msg_s->text);
+        }
+
+        return 0;
+}
