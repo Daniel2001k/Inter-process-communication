@@ -4,43 +4,42 @@
 #include <signal.h>
 
 #include <fcntl.h>
-#include <errno.h>
 #include <unistd.h>
 #include <math.h>
+#include <errno.h>
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/types.h>
 
-#define SHM_SIZE 1024
-#define SHM_KEY 1234
+#define SIZE 1024
+#define KEY 1234
 
 int main()
 {
-        int shmid = shmget(SHM_KEY, SHM_SIZE, 0666);
-        int semid = semget(SHM_KEY, 1, 0666);
+        int shmid = shmget(KEY, SIZE, 0666);
         char *shmaddr = shmat(shmid, (void*)0, 0);
+        int semid = semget(KEY, 1, 0666);
 
-        fgets(shmaddr, SHM_SIZE, stdin);
 
-        struct sembuf sem_st = {0, 1, 0};
+        fgets(shmaddr, SIZE, stdin);
+        struct sembuf semcfg = {0,1,0};
+        semop(semid, &semcfg, 1);
 
-        semop(semid, &sem_st, 1);
 
-        sem_st.sem_op = -1;
+        semcfg.sem_op = -1;
+        semop(semid, &semcfg, 1);
 
-        semop(semid, &sem_st, 1);
 
-        char result[100];
+        char ws[100];
+        sprintf(ws, "Klient: %s", shmaddr);
+        sprintf(shmaddr, "%s", ws);
 
-        sprintf(result, "Klient - %s", shmaddr);
 
-        sprintf(shmaddr, "%s", result);
-        printf("Wysylam: %s\n", shmaddr);
+        semcfg.sem_op = 1;
+        semop(semid, &semcfg, 1);
 
-        sem_st.sem_op = 1;
-        semop(semid, &sem_st, 1);
 
         shmdt(shmaddr);
 
