@@ -10,32 +10,27 @@
 typedef struct sockaddr SockAddr;
 typedef struct sockaddr_un SockAddr_un;
 
+char path[] = "/tmp/unix";
+int g;
+
 int main()
 {
-    int gniazdo;
-    socklen_t i;
+    socklen_t i = sizeof(SockAddr_un);
     SockAddr_un adres;
-    char *sciezka;
-    char msg[1024];
     char buf[1024];
 
-    sciezka = strndup("/tmp/roboczy.unix_serwer", strlen("/tmp/roboczy.unix_serwer"));
-
-    gniazdo = socket(PF_UNIX, SOCK_STREAM, 0);
+    g = socket(AF_UNIX, SOCK_STREAM, 0);
     bzero((char *)&adres, sizeof(SockAddr_un));
     adres.sun_family = AF_UNIX;
-    strncpy(adres.sun_path, sciezka, strlen(sciezka));
-    free(sciezka);
-    i = sizeof(SockAddr_un);
+    strncpy(adres.sun_path, path, strlen(path));
 
-    connect(gniazdo, (SockAddr *)&adres, i);
-    printf("Klient: Wpisz wiadomosc do wyslania:\n");
-    fgets(msg, sizeof(msg), stdin);
+    connect(g, (SockAddr *)&adres, i);
+    fgets(buf, sizeof(buf), stdin);
 
-    write(gniazdo, msg, strlen(msg));
+    write(g, buf, strlen(buf));
 
-    ssize_t liczba_bajtow = read(gniazdo, buf, sizeof(buf));
-    printf("Klient: Odebrano %ld bajtow od serwera, wiadomosc od serwera: %s\n", liczba_bajtow, buf);
-    close(gniazdo);
+    ssize_t liczba_bajtow = read(g, buf, sizeof(buf));
+    close(g);
+
     return 0;
 }
