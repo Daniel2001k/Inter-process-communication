@@ -35,31 +35,30 @@ int main()
     adres.sun_family = AF_UNIX;
     strncpy(adres.sun_path, path, strlen(path));
 
-    bind(g, (SockAddr*)&adres, i);
-    getsockname(g, (SockAddr*)&adres, &i);
+    bind(g, (SockAddr *)&adres, i);
+    getsockname(g, (SockAddr *)&adres, &i);
     listen(g, 5);
 
     for (;;)
     {
-        g1 = accept(g, (SockAddr*)&adres_k, &i);
+        g1 = accept(g, (SockAddr *)&adres_k, &i);
         char message[1024];
-	    char message1[1024];
+        char message1[1024];
         ssize_t liczba_bajtow = read(g1, message, sizeof(message));
-	
-	    double temp;
-	    sscanf(message, "%lf", &temp);
-	    printf("Otrzymano: %lf\n", temp);
+
+        double temp;
+        sscanf(message, "%lf", &temp);
+        printf("Otrzymano: %lf\n", temp);
 
         memset(message, 0, sizeof(message));
-	    sprintf(message, "To jest z serwera - %lf", temp * temp);
-	    printf("Wyslano: %s\n", message);
-        
-	    write(g1, message, sizeof(message));
+        sprintf(message, "To jest z serwera - %lf", temp * temp);
+        printf("Wyslano: %s\n", message);
 
-	    liczba_bajtow = read(g1, message, sizeof(message));
+        write(g1, message, sizeof(message));
 
-	    printf("Wynik: %s\n", message);
+        liczba_bajtow = read(g1, message, sizeof(message));
 
+        printf("Wynik: %s\n", message);
 
         close(g1);
     }
