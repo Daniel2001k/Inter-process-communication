@@ -2,46 +2,50 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <unistd.h>
+
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <unistd.h>
-
-typedef struct sockaddr SockAddr;
-typedef struct sockaddr_un SockAddr_un;
-
-char path[] = "/tmp/unix";
-int g;
+#define SER_PATH "./ser"
+#define CLI_PATH "./cli"
 
 int main()
 {
-    socklen_t i = sizeof(SockAddr_un);
-    SockAddr_un adres;
-    char buf[1024];
-
-    g = socket(AF_UNIX, SOCK_DGRAM, 0);
-    bzero((char *)&adres, sizeof(SockAddr_un));
-    adres.sun_family = AF_UNIX;
-    strncpy(adres.sun_path, path, strlen(path));
-
-    fgets(buf, sizeof(buf), stdin);
-
-    sendto(g, buf, strlen(buf), 0, (SockAddr *)&adres, i);
-
-    ssize_t liczba_bajtow = recvfrom(g, buf, sizeof(buf), 0, (SockAddr *)&adres, &i);
-    buf[liczba_bajtow] = '\0';
-
-    char temp[1024];
-    sprintf(temp, "To jest z klienta - %s", buf);
-    
-    memset(buf, 0, sizeof(buf));
-
-    sprintf(buf, "%s", temp);
-    printf("%s\n", buf);
-
-    sendto(g, buf, strlen(buf), 0, (SockAddr *)&adres, i);
-
-    close(g);
-
-    return 0;
+    int server_fd;
+    struct sockaddr_un server_addr;
+    int num1, num2;
+    socklen_t server_len = sizeof(server_addr);
+    char buffer[256];
+    if ((server_fd = socket(AF_UNIX, SOCK_DGRAM, 0)) == -1)
+    {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sun_family = AF_UNIX;
+    strcpy(server_addr.sun_path, CLI_PATH);
+    unlink(CLI_PATH);
+    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sun_family = AF_UNIX;
+    strcpy(server_addr.sun_path, SER_PATH);
+    if (connect(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    {
+        perror("connect");
+        exit(EXIT_FAILURE);
+    }
+    printf("Podaj dwie liczby po spacji \n");
+    scanf("%d %d", &num1, &num2);
+    sprintf(buffer, "%d %d", num1, num2);
+    send(server_fd, buffer, strlen(buffer) + 1, 0);
+    printf("Wyslano \n");
+    recv(server_fd, buffer, sizeof(buffer), 0);
+    printf("Odczytano %s \n", buffer);
+    close(server_fd);
+    unlink(CLI_PATH);
 }
