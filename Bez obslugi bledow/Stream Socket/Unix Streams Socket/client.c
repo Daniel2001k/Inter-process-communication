@@ -30,6 +30,18 @@ int main()
     write(g, buf, strlen(buf));
 
     ssize_t liczba_bajtow = read(g, buf, sizeof(buf));
+    buf[liczba_bajtow] = '\0';
+
+    char temp[1024];
+    sprintf(temp, "To jest z klienta - %s", buf);
+    
+    memset(buf, 0, sizeof(buf));
+
+    sprintf(buf, "%s", temp);
+    printf("%s\n", buf);
+
+    write(g, buf, sizeof(buf));
+
     close(g);
 
     return 0;
