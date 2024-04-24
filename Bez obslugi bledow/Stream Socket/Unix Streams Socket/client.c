@@ -20,7 +20,8 @@ int main()
     char buf[1024];
 
     g = socket(AF_UNIX, SOCK_STREAM, 0);
-    bzero((char *)&adres, sizeof(SockAddr_un));
+    //bzero((char *)&adres, sizeof(SockAddr_un));
+    memset(&adres, 0, sizeof(adres));
     adres.sun_family = AF_UNIX;
     strncpy(adres.sun_path, path, strlen(path));
 
