@@ -31,7 +31,8 @@ int main()
     signal(SIGINT, al);
 
     g = socket(AF_UNIX, SOCK_STREAM, 0);
-    bzero((char *)&adres, sizeof(SockAddr_un));
+    memset(&adres, 0, sizeof(adres));
+    //bzero((char *)&adres, sizeof(SockAddr_un));
     adres.sun_family = AF_UNIX;
     strncpy(adres.sun_path, path, strlen(path));
 
@@ -43,7 +44,6 @@ int main()
     {
         g1 = accept(g, (SockAddr *)&adres_k, &i);
         char message[1024];
-        char message1[1024];
         ssize_t liczba_bajtow = read(g1, message, sizeof(message));
 
         double temp;
