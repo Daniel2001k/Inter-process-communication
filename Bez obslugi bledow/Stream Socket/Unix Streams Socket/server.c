@@ -43,10 +43,23 @@ int main()
     {
         g1 = accept(g, (SockAddr*)&adres_k, &i);
         char message[1024];
+	    char message1[1024];
         ssize_t liczba_bajtow = read(g1, message, sizeof(message));
-        message[liczba_bajtow] = '\0';
-        //memset(message, 0, sizeof(message));
-        write(g1, message, strlen(message));
+	
+	    double temp;
+	    sscanf(message, "%lf", &temp);
+	    printf("Otrzymano: %lf\n", temp);
+
+        memset(message, 0, sizeof(message));
+	    sprintf(message, "To jest z serwera - %lf", temp * temp);
+	    printf("Wyslano: %s\n", message);
+        
+	    write(g1, message, sizeof(message));
+
+	    liczba_bajtow = read(g1, message, sizeof(message));
+
+	    printf("Wynik: %s\n", message);
+
 
         close(g1);
     }
