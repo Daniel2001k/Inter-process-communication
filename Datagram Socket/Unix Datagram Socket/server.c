@@ -1,47 +1,54 @@
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <stdlib.h>
+
+#include <unistd.h>
 
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <unistd.h>
-
-typedef struct sockaddr SockAddr;
-typedef struct sockaddr_un SockAddr_un;
-
-char path[] = "/tmp/unix";
-int g;
+#define SER_PATH "./ser"
+#define CLI_PATH "./cli"
 
 int main()
 {
-    socklen_t i = sizeof(SockAddr_un);
-    SockAddr_un adres;
-    char buf[1024];
-
-    g = socket(AF_UNIX, SOCK_DGRAM, 0);
-    bzero((char *)&adres, sizeof(SockAddr_un));
-    adres.sun_family = AF_UNIX;
-    strncpy(adres.sun_path, path, strlen(path));
-
-    fgets(buf, sizeof(buf), stdin);
-
-    sendto(g, buf, strlen(buf), 0, (SockAddr *)&adres, i);
-
-    ssize_t liczba_bajtow = recvfrom(g, buf, sizeof(buf), 0, (SockAddr *)&adres, &i);
-    buf[liczba_bajtow] = '\0';
-
-    char temp[1024];
-    sprintf(temp, "To jest z klienta - %s", buf);
-    
-    memset(buf, 0, sizeof(buf));
-
-    sprintf(buf, "%s", temp);
-    printf("%s\n", buf);
-
-    sendto(g, buf, strlen(buf), 0, (SockAddr *)&adres, i);
-
-    close(g);
-
-    return 0;
+    int server_fd;
+    struct sockaddr_un server_addr, client_addr;
+    int num1, num2, result;
+    socklen_t client_len = sizeof(client_addr);
+    if ((server_fd = socket(AF_UNIX, SOCK_DGRAM, 0)) == -1)
+    {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sun_family = AF_UNIX;
+    strcpy(server_addr.sun_path, SER_PATH);
+    unlink(SER_PATH);
+    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+    char buffer[256];
+    while (1)
+    {
+        if (recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_len) == -1)
+        {
+            perror("recvfrom");
+            exit(EXIT_FAILURE);
+        }
+        printf("Wiadmosc od klienta %s \n", buffer);
+        sscanf(buffer, "%d %d", &num1, &num2);
+        result = num1 + num2;
+        sprintf(buffer, "%d", result);
+        if (sendto(server_fd, buffer, strlen(buffer) + 1, 0, (struct sockaddr *)&client_addr, client_len) == -1)
+        {
+            perror("sendto");
+            exit(EXIT_FAILURE);
+        }
+        printf("Wyslano \n");
+    }
+    close(server_fd);
 }
