@@ -19,33 +19,25 @@ int main() {
     char text[256];
 
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
-    }
-
-
     memset(&servaddr, 0, sizeof(servaddr));
+    
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = INADDR_ANY;
     servaddr.sin_port = htons(PORT);
 
-    if (bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
+    bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
 
     while (1) {
         len = sizeof(cliaddr);
         int n = recvfrom(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *)&cliaddr, &len);
-        if (n > 0) {
-            sscanf(buffer, "%lf %ld %[^\n]", &a, &b, text);
-            double result = pow(a, (double)b);
-            int text_length = strlen(text);
-            sprintf(response, "%f%s%d", result, text, text_length);
+        
+        sscanf(buffer, "%lf %ld %[^\n]", &a, &b, text);
+        double result = pow(a, (double)b);
+        int text_length = strlen(text);
+        sprintf(response, "%f%s%d", result, text, text_length);
 
-            sendto(sockfd, response, strlen(response), 0, (const struct sockaddr *)&cliaddr, len);
-        }
+        sendto(sockfd, response, strlen(response), 0, (const struct sockaddr *)&cliaddr, len);
+        
 
         memset(buffer, 0, BUF_SIZE);  // Clear the buffer for the next message
 
