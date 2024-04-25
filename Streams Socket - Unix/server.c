@@ -34,7 +34,7 @@ int main()
     memset(&adres, 0, sizeof(adres));
 
     adres.sun_family = AF_UNIX;
-    strncpy(adres.sun_path, path, strlen(path));
+    strcpy(adres.sun_path, path);
     unlink(path);
 
     bind(g, (SockAddr *)&adres, i);
