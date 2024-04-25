@@ -34,7 +34,7 @@ int main()
     memset(&adres, 0, sizeof(adres));
     adres.sin_family = AF_INET;
     adres.sin_port = htons(8080);
-    adres.sin_addr.s_addr = htonl(INADDR_ANY);
+    adres.sin_addr.s_addr = INADDR_ANY;
 
 
     bind(g, (SockAddr *)&adres, i);
