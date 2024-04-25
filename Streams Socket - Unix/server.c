@@ -35,6 +35,7 @@ int main()
 
     adres.sun_family = AF_UNIX;
     strncpy(adres.sun_path, path, strlen(path));
+    unlink(path);
 
     bind(g, (SockAddr *)&adres, i);
     getsockname(g, (SockAddr *)&adres, &i);
