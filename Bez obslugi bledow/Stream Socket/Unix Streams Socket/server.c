@@ -32,7 +32,7 @@ int main()
 
     g = socket(AF_UNIX, SOCK_STREAM, 0);
     memset(&adres, 0, sizeof(adres));
-    //bzero((char *)&adres, sizeof(SockAddr_un));
+
     adres.sun_family = AF_UNIX;
     strncpy(adres.sun_path, path, strlen(path));
 
