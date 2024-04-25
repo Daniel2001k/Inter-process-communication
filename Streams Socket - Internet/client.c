@@ -18,7 +18,6 @@ int main()
 {
     socklen_t i = sizeof(SockAddr_in);
     SockAddr_in adres;
-    struct hostent *Adres = gethostbyname("127.0.0.1");
     char buf[1024];
 
     g = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,7 +25,7 @@ int main()
 
     adres.sin_family = AF_INET;
     adres.sin_port = htons(8080);
-    adres.sin_addr.s_addr = *(long*)(Adres->h_addr);
+    adres.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     connect(g, (SockAddr *)&adres, i);
     fgets(buf, sizeof(buf), stdin);
