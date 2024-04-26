@@ -1,43 +1,56 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <signal.h>
+
+#include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
+#include <math.h>
+
+#include <netdb.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
 
 #define PORT 8080
-#define SERVER "127.0.0.1"
-#define BUF_SIZE 1024
 
-int main() {
-    int sockfd;
-    struct sockaddr_in servaddr;
-    char buffer[BUF_SIZE], response[BUF_SIZE];
-    double a = 5.0;
-    long b = 3;
-    char *text = "Hello Server";
+int main()
+{
+        int server_fd;
+        struct sockaddr_in server_addr;
 
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
-    }
+        server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+        memset(&server_addr, 0, sizeof(server_addr));
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(PORT);
-    servaddr.sin_addr.s_addr = inet_addr(SERVER);
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        server_addr.sin_port = htons(PORT);
 
-    sprintf(buffer, "%lf %ld %s", a, b, text);
-    sendto(sockfd, buffer, strlen(buffer), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr));
 
-    int len = sizeof(servaddr);
-    int n = recvfrom(sockfd, response, BUF_SIZE, 0, (struct sockaddr *) &servaddr, &len);
-    response[n] = '\0';
-    printf("Server response: %s\n", response);
+        char buffer[100];
+        double a,b,result;
 
-    sprintf(buffer, "%s - To jest z klienta", response);
-    sendto(sockfd, buffer, strlen(buffer), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr));
+        fgets(buffer, sizeof(buffer), stdin);
 
-    close(sockfd);
-    return 0;
+        sendto(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&server_addr, sizeof(server_addr));
+
+        socklen_t serlen = sizeof(server_addr);
+
+        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&server_addr, &serlen);
+
+        char temp[100];
+
+        sprintf(temp, "To jest z klienta - %s", buffer);
+
+        memset(buffer, 0, sizeof(buffer));
+
+        sprintf(buffer, "%s", temp);
+
+        sendto(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&server_addr, sizeof(server_addr));
+
+        printf("Wyslano: %s\n", buffer);
+
+        close(server_fd);
+
+        return 0;
 }
