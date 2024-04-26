@@ -1,50 +1,59 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <signal.h>
+
+#include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include <math.h>
+
+#include <netdb.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
 
 #define PORT 8080
-#define BUF_SIZE 1024
 
-int sockfd;
+int main()
+{
+        int server_fd;
+        struct sockaddr_in server_addr, client_addr;
+        socklen_t client_len = sizeof(client_addr);
 
-int main() {
-    struct sockaddr_in servaddr, cliaddr;
-    char buffer[BUF_SIZE], response[BUF_SIZE];
-    socklen_t len;
-    double a;
-    long b;
-    char text[256];
+        server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+        memset(&server_addr, 0, sizeof(server_addr));
 
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    memset(&servaddr, 0, sizeof(servaddr));
-    
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(PORT);
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_addr.s_addr = INADDR_ANY;
+        server_addr.sin_port = htons(PORT);
 
-    bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
+        bind(server_fd, (const struct sockaddr*)&server_addr, sizeof(server_addr));
 
-    while (1) {
-        len = sizeof(cliaddr);
-        int n = recvfrom(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *)&cliaddr, &len);
-        
-        sscanf(buffer, "%lf %ld %[^\n]", &a, &b, text);
-        double result = pow(a, (double)b);
-        int text_length = strlen(text);
-        sprintf(response, "%f%s%d", result, text, text_length);
+        char buffer[100];
+        double a,b,result;
 
-        sendto(sockfd, response, strlen(response), 0, (const struct sockaddr *)&cliaddr, len);
-        
+        for (;;)
+        {
+                recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&client_addr, &client_len);
 
-        memset(buffer, 0, BUF_SIZE);  // Clear the buffer for the next message
+                sscanf(buffer, "%lf %lf", &a, &b);
 
-        n = recvfrom(sockfd, buffer, BUF_SIZE, 0, (struct sockaddr *)&cliaddr, &len);
-        printf("%s\n", buffer);
-    }
+                result = pow(a, b);
 
-    close(sockfd);
-    return 0;
+                memset(buffer, 0, sizeof(buffer));
+
+                sprintf(buffer, "To jest z serwera - %lf", result);
+
+                sendto(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&client_addr, client_len);
+
+                memset(buffer, 0, sizeof(buffer));
+
+                recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr*)&client_addr, &client_len);
+
+                printf("Wynik: %s\n", buffer);
+        }
+
+        close(server_fd);
+
+        return 0;
 }
