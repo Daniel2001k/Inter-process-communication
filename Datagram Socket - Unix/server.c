@@ -31,7 +31,7 @@ int main()
     
     while (1)
     {
-        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_len)l
+        recvfrom(server_fd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_len);
         printf("Wiadmosc od klienta %s \n", buffer);
         sscanf(buffer, "%d %d", &num1, &num2);
         result = num1 + num2;
